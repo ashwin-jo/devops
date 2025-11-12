@@ -1,60 +1,100 @@
-# devops
-EXP 1:
-git init 
+Here’s your **formatted version** of the full text — neat, readable, and ready to copy or submit 👇
+
+---
+
+# **Experiment 1: Git & GitHub Operations**
+
+```bash
+git init
 git add .
 git commit -m "initial commit"
 git remote add origin https://github.com/manojmr23/ABC.git
-git push -u origin main. If this error occurs, use this command ( git branch -m main) and redo this push  command 
+git push -u origin main
+```
 
+> **If an error occurs**, rename the branch and push again:
+
+```bash
+git branch -m main
+git push -u origin main
+```
+
+### **Create and Push a Feature Branch**
+
+```bash
 git checkout -b feature-branch
 echo "Feature branch update" >> demo.txt
 git add .
 git commit -m "Added demo.txt for pull request test"
 git push origin feature-branch
+```
 
+---
 
-EXP 2:
-Exp 2 :
+# **Experiment 2: Simple Docker Web App**
+
+```bash
 mkdir docker-demo
 cd docker-demo
+```
 
-create index.html file 
+### **Create `index.html`**
 
-create docker file 
+```html
+<h1>Hello from Dockerized NGINX!</h1>
+```
 
-FROM nginx 
+### **Create `Dockerfile`**
+
+```dockerfile
+FROM nginx
 COPY index.html /usr/share/nginx/html/index.html
+```
 
+### **Build and Run**
+
+```bash
 docker build -t myweb:v1 .
+docker run -d -p 9090:80 myweb:v1
+```
 
-docker run -d -p 9090:80 myweb:v1
+---
 
+# **Experiment 3: Flask App in Docker**
 
+**Project Structure:**
 
-EXP 3:
+```
 flask-docker-app/
 ├── app.py
 ├── requirements.txt
 └── Dockerfile
+```
 
-app.py 
+### **app.py**
 
+```python
 from flask import Flask, render_template_string
 
 app = Flask(__name__)
+
 @app.route('/')
 def home():
     return render_template_string("<h1>Welcome to the Flask Docker App!</h1>")
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+```
 
-requirements.txt
+### **requirements.txt**
 
+```
 Flask==2.2.5
+```
 
+### **Dockerfile**
 
-Dockerfile
-
+```dockerfile
 FROM python:3.9-slim
 WORKDIR /app
 COPY requirements.txt requirements.txt
@@ -62,20 +102,27 @@ RUN pip install -r requirements.txt
 COPY . .
 EXPOSE 5000
 CMD ["python", "app.py"]
+```
 
+### **Build and Run**
 
+```bash
 docker build -t flask-docker-app .
-
 docker run -p 5000:5000 flask-docker-app
+```
 
+---
 
+# **Experiment 4: Jenkins Setup using Docker Compose**
 
-EXP 4:
-mkdir jenkins-static-site   
-cd jenkins-static-site 
+```bash
+mkdir jenkins-static-site
+cd jenkins-static-site
+```
 
-docker-compose.yml
+### **docker-compose.yml**
 
+```yaml
 version: '3.8'
 
 services:
@@ -90,33 +137,46 @@ services:
       - jenkins_home:/var/jenkins_home
       - ./jenkins-config:/usr/share/jenkins/ref
       - /var/run/docker.sock:/var/run/docker.sock
+
 volumes:
   jenkins_home:
     driver: local
+```
 
+### **Run Jenkins**
 
+```bash
 docker compose up -d
+```
 
+### **Get Admin Password**
 
+```bash
 docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+```
 
+> **If any error occurs:**
 
-if any error came u can do this 
+```bash
 docker compose down
->> docker compose up -d
+docker compose up -d
+```
 
+---
 
+# **Experiment 5: Python CI/CD with Docker & GitHub Actions**
 
-
-
-EXP 5:
-
+```bash
 mkdir python-ci-docker-lab
 cd python-ci-docker-lab
+```
 
+### **Project Structure**
+
+```
 python-ci-docker-lab/
 │
-├── __init__.py   ✅ (empty file)
+├── __init__.py
 ├── app.py
 ├── requirements.txt
 ├── Dockerfile
@@ -128,97 +188,114 @@ python-ci-docker-lab/
 └── .github/
     └── workflows/
         └── ci-dockerhub.yml
+```
 
-STEP 2 — Create Python Files
-app.py
+### **app.py**
+
+```python
 def add(a, b):
     return a + b
 
 if __name__ == "__main__":
     print("Hello from Python CI Lab!")
     print("2 + 3 =", add(2, 3))
+```
 
-tests/test_app.py
+### **tests/test_app.py**
+
+```python
 import sys
 import os
-# ✅ Add the project root to Python's module path
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from app import add
+
 def test_add():
     assert add(2, 3) == 5
     assert add(-1, 1) == 0
+```
 
-requirements.txt
+### **requirements.txt**
+
+```
 pytest==8.3.2
+```
 
-Dockerfile
+### **Dockerfile**
+
+```dockerfile
 FROM python:3.11-slim
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 CMD ["python", "app.py"]
+```
 
-gitignore
+### **.gitignore**
+
+```
 __pycache__/
 .venv/
 .pytest_cache/
 .DS_Store
 *.pyc
+```
 
-ci-dockerhub.yml
+### **GitHub Workflow: `.github/workflows/ci-dockerhub.yml`**
 
+```yaml
 name: ci-dockerhub
+
 on:
   push:
     branches: [ "main" ]
     tags: [ "*" ]
   pull_request:
     branches: [ "main" ]
+
 jobs:
   build-test-push:
     runs-on: ubuntu-latest
     steps:
-    # Step 1: Checkout code
     - name: Checkout
       uses: actions/checkout@v4
-    # Step 2: Set up Python 3.11
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-    # Step 3: Install dependencies
+
     - name: Install deps
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-    # Step 4: Run tests
+
     - name: Run tests
       run: pytest -q
-    # Step 5: Set Docker image metadata
+
     - name: Docker meta
       id: meta
       uses: docker/metadata-action@v5
       with:
-        # ✅ Hardcode your Docker Hub username to prevent invalid tags
         images: manojmr232005/python-ci-lab
         tags: |
           type=raw,value=latest,enable={{is_default_branch}}
           type=sha,prefix=sha-,format=short
           type=ref,event=tag
-    # Step 6: Set up QEMU (for multi-arch builds)
+
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
-    # Step 7: Set up Docker Buildx
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-    # Step 8: Login to Docker Hub
+
     - name: Login to Docker Hub
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-    # Step 9: Build and push the Docker image
+
     - name: Build and push
       uses: docker/build-push-action@v6
       with:
@@ -227,69 +304,94 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         platforms: linux/amd64
+```
 
-This file tells GitHub Actions:
-Test Python code
-Build Docker image
-Push it to Docker Hub automatically
-________________________________________
-🧪 STEP 4 — Test Locally (Optional)
-Run manually to confirm before CI:
+### **Local Testing**
+
+```bash
 python app.py
 python -m pytest -q
 docker build -t yourname/python-ci-lab:local .
 docker run --rm yourname/python-ci-lab:local
+```
 
-STEP 5 — Initialize Git & Push
+### **Push to GitHub**
+
+```bash
 git init
 git add .
 git commit -m "init lab"
 git branch -M main
 git remote add origin https://github.com/<your-username>/python-ci-docker-lab.git
 git push -u origin main
+```
 
+> **If CI fails:**
 
+```bash
 git commit --allow-empty -m "retrigger: fix Docker Hub login"
->> git push
+git push
+```
 
+---
 
+# **Experiment 6: Manage Kubernetes Resources Using CLI**
 
-Manage Kubernetes Resources Using CLI
+## **A. Install Docker**
 
-A. Install Docker
-Windows:
-1. Download and install Docker Desktop from Docker's website.
-2. Enable WSL2 backend during installation.
-3. Start Docker Desktop and ensure it is running.
+**For Windows:**
 
-Verify Docker installation:
+1. Download and install Docker Desktop.
+2. Enable **WSL2 backend**.
+3. Start Docker Desktop.
+
+**Verify Installation:**
+
+```bash
 docker --version
+```
 
-B. Install kubectl (Kubernetes CLI)
-Windows (using Chocolatey):
+---
 
+## **B. Install kubectl (Kubernetes CLI)**
+
+**Using Chocolatey:**
+
+```bash
 choco install kubernetes-cli
+```
 
-Verify installation:
+**Verify Installation:**
+
+```bash
 kubectl version --client
+```
 
-C. Install and Start Minikube
-Windows (using Chocolatey):
+---
 
+## **C. Install and Start Minikube**
+
+**Using Chocolatey:**
+
+```bash
 choco install minikube
 minikube start --driver=docker
+```
 
-Verify the cluster is running:
+**Verify Cluster:**
 
+```bash
 minikube status
 kubectl get nodes
+```
 
-If kubectl get nodes returns a node in Ready state — you are ready to go!
+---
 
-🧩 Step 1: Create a Simple Pod
+## **Step 1: Create a Simple Pod**
 
-Create a file: nginx-pod.yaml
+Create `nginx-pod.yaml`:
 
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -302,83 +404,94 @@ spec:
       image: nginx:latest
       ports:
         - containerPort: 80
+```
 
+**Apply the manifest:**
 
-Apply the manifest:
-
+```bash
 kubectl apply -f nginx-pod.yaml
-
-Check pod status:
-
 kubectl get pods
-# expected: nginx-pod 1/1 Running
-
-Describe the pod (to see detailed info):
-
 kubectl describe pod nginx-pod
+```
 
-Forward the port locally to access it in the browser:
+**Access the Pod:**
 
+```bash
 kubectl port-forward pod/nginx-pod 8080:80
+```
 
-Then open http://localhost:8080 in your browser.
-When done, delete the pod:
+Visit → [http://localhost:8080](http://localhost:8080)
 
+**Delete Pod:**
+
+```bash
 kubectl delete pod nginx-pod
+```
 
-🧩 Step 2: Deployment and Scaling
-Create a deployment:
+---
 
+## **Step 2: Deployment and Scaling**
+
+```bash
 kubectl create deployment my-nginx --image=nginx
-
-Check deployments and pods:
-
 kubectl get deployments
-
 kubectl get pods -l app=my-nginx
-
-Scale to 3 replicas:
 
 kubectl scale deployment my-nginx --replicas=3
 kubectl get pods
 
-Update the image (rolling update):
-
 kubectl set image deployment/my-nginx nginx=nginx:1.25
 kubectl rollout status deployment/my-nginx
+```
 
-If something goes wrong, rollback:
+**Rollback if needed:**
+
+```bash
 kubectl rollout undo deployment/my-nginx
+```
 
-🧩 Step 3: Expose Deployment as a Service
-Expose the deployment using a NodePort service:
+---
 
+## **Step 3: Expose Deployment as a Service**
+
+```bash
 kubectl expose deployment my-nginx --type=NodePort --port=80
 kubectl get svc
-
-Get the URL of your app using Minikube:
-
 minikube service my-nginx --url
+```
 
 Open the displayed URL in your browser.
 
-To remove the service:
-kubectl delete svc my-nginx
+**Remove the service:**
 
-🧹 Step 4: Cleanup
-After the lab, clean up all created resources:
+```bash
+kubectl delete svc my-nginx
+```
+
+---
+
+## **Step 4: Cleanup**
+
+```bash
 kubectl delete deployment my-nginx
 kubectl delete svc my-nginx
 kubectl delete all --all -n default
-
-If you want to stop or delete the cluster:
 minikube stop
 minikube delete
+```
 
-🧾 Summary
-In this lab, you learned how to:
+---
+
+## **🧾 Summary**
+
+You learned how to:
+
 1. Install Docker, kubectl, and Minikube.
 2. Create and manage Pods.
 3. Deploy and scale applications.
 4. Expose Deployments as services.
 5. Clean up resources safely.
+
+---
+
+Would you like me to format this as a **lab manual PDF** (with proper titles, code blocks, and numbering) for printing or submission?
